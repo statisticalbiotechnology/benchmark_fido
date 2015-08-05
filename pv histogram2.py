@@ -10,7 +10,7 @@ perc = doc['percolator_output']['proteins']['protein']
 
 px = []
 
-for i in range(0, 656):
+for i in range(0, sys.argv[2]):
     trial = perc[i]['@p:protein_id']
     
     if 'Random' in trial:
@@ -18,5 +18,5 @@ for i in range(0, 656):
         pv = float(pv)
         px.append(pv)
 
-plt.hist(px, bins=sys.argv[2])
+plt.hist(px, bins=sys.argv[3])
 plt.show()
