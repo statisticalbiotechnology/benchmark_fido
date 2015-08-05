@@ -1,3 +1,4 @@
+import sys
 import csv 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -29,11 +30,11 @@ py6 = []
 ex6 = []
 
 for i in range(1,10):
-    t = csv.reader(open('15000.prot%d.tab' % (i),'rb'), delimiter = '\t')
+    t = csv.reader(open(sys.argv[1] % (i),'rb'), delimiter = '\t')
     t.next()
     localQvalues = [float(row[2]) for row in t]
     qvalues.append(localQvalues)
-    q = csv.reader(open('15000.prot%d.tab' % (i),'rb'), delimiter = '\t')
+    q = csv.reader(open(sys.argv[1] % (i),'rb'), delimiter = '\t')
     q.next()
     falsep = [row[0] for row in q]
     fdrs.append(falsep)
@@ -41,7 +42,7 @@ for i in range(1,10):
 minLength = min([len(lq) for lq in qvalues])
 
 for i in range(minLength):
-    qvalRow = [qvalues[j][i] for j in range(9)]
+    qvalRow = [qvalues[j][i] for j in range(int(sys.argv[7])-1)]
     avqv = np.mean(qvalRow)
     sdqv = np.std(qvalRow) 
     
@@ -61,11 +62,11 @@ for i in range(minLength):
     ex.append(sdqv)
    
 for i in range(1,10):
-    t3 = csv.reader(open('30000.prot%d.tab' % (i),'rb'), delimiter = '\t')
+    t3 = csv.reader(open(sys.argv[3] % (i),'rb'), delimiter = '\t')
     t3.next()
     localQvalues3 = [float(row[2]) for row in t3]
     qvalues3.append(localQvalues3)
-    q3 = csv.reader(open('30000.prot%d.tab' % (i),'rb'), delimiter = '\t')
+    q3 = csv.reader(open(sys.argv[3] % (i),'rb'), delimiter = '\t')
     q3.next()
     falsep3 = [row[0] for row in q3]
     fdrs3.append(falsep3)
@@ -73,7 +74,7 @@ for i in range(1,10):
 minLength = min([len(lq) for lq in qvalues3])
 
 for i in range(minLength):
-    qvalRow3 = [qvalues3[j][i] for j in range(9)]
+    qvalRow3 = [qvalues3[j][i] for j in range(int(sys.argv[7])-1)]
     avqv3 = np.mean(qvalRow3)
     sdqv3 = np.std(qvalRow3) 
     
@@ -93,11 +94,11 @@ for i in range(minLength):
     ex3.append(sdqv3)
        
 for i in range(1,10):
-    t6 = csv.reader(open('60000.prot%d.tab' % (i),'rb'), delimiter = '\t')
+    t6 = csv.reader(open(sys.argv[5] % (i),'rb'), delimiter = '\t')
     t6.next()
     localQvalues6 = [float(row[2]) for row in t6]
     qvalues6.append(localQvalues6)
-    q6 = csv.reader(open('60000.prot%d.tab' % (i),'rb'), delimiter = '\t')
+    q6 = csv.reader(open(sys.argv[5] % (i),'rb'), delimiter = '\t')
     q6.next()
     falsep6 = [row[0] for row in q6]
     fdrs6.append(falsep6)
@@ -105,7 +106,7 @@ for i in range(1,10):
 minLength = min([len(lq) for lq in qvalues6])
 
 for i in range(minLength):
-    qvalRow6 = [qvalues6[j][i] for j in range(9)]
+    qvalRow6 = [qvalues6[j][i] for j in range(int(sys.argv[7])-1)]
     avqv6 = np.mean(qvalRow6)
     sdqv6 = np.std(qvalRow6) 
     
@@ -126,9 +127,9 @@ for i in range(minLength):
     
 
 plt.plot(x, x, 'k--')
-plt.errorbar(px, py, xerr=ex, yerr=None, color='r', ecolor = 'maroon', errorevery = 60, label='Nr1 peptides')
-plt.errorbar(px3, py3, xerr=ex3, yerr=None, color='g', ecolor = 'darkgreen', errorevery = 60, label='Nr2 peptides')
-plt.errorbar(px6, py6, xerr=ex6, yerr=None, color='royalblue', ecolor = 'steelblue', errorevery = 80, label='Nr3 peptides')
+plt.errorbar(px, py, xerr=ex, yerr=None, color='r', ecolor = 'maroon', errorevery = 60, label=sys.argv[2])
+plt.errorbar(px3, py3, xerr=ex3, yerr=None, color='g', ecolor = 'darkgreen', errorevery = 60, label=sys.argv[4])
+plt.errorbar(px6, py6, xerr=ex6, yerr=None, color='royalblue', ecolor = 'steelblue', errorevery = 80, label=sys.argv[6])
 pylab.legend(loc='lower right')
 plt.xlabel("Expected q value")
 plt.ylabel("Observed FDR")
