@@ -1,8 +1,9 @@
+import sys
 import csv 
 import matplotlib.pyplot as plt
 import numpy as np
 
-file = open('Filename', 'rb') # The input is the protein output file (.tab) from Percolator (-l)
+file = open(sys.argv[1], 'rb') # The input is the protein output file (.tab) from Percolator (-l)
 data = csv.reader(file, delimiter='\t')
 table = [row for row in data]
 x = np.linspace(0, 1, num=1000)
