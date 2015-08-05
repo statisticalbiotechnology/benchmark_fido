@@ -1,16 +1,17 @@
+import sys
 import csv 
 import matplotlib.pyplot as plt
 import pylab
 import numpy as np
 
-file = open('Filename.tab', 'rb') # The input is the protein output file (.tab) from Percolator (-l). In this case, each file has a different peptide number. 
+file = open(sys.argv[1], 'rb') # The input is the protein output file (.tab) from Percolator (-l). In this case, each file has a different peptide number. 
 data15 = csv.reader(file, delimiter='\t') # Before Percolator, the file was created with the simulation script, each with different --numSpectra value.
 table15 = [row for row in data15]
 
-data30 = csv.reader(open('Filename2.tab', 'rb'), delimiter='\t')
+data30 = csv.reader(open(sys.argv[3], 'rb'), delimiter='\t')
 table30 = [row for row in data30]
 
-data60 = csv.reader(open('Filename3.tab', 'rb'), delimiter='\t')
+data60 = csv.reader(open(sys.argv[5], 'rb'), delimiter='\t')
 table60 = [row for row in data60]
 
 x = np.linspace(0, 1, num=1000)
@@ -126,9 +127,9 @@ for i in range (1, len(table60)):
     py6.append(fpp6)
     
     
-first = plt.plot(px, py, 'b', label='Nr1 peptides')
-second = plt.plot(px3, py3, 'g', label='Nr2 peptides')
-third = plt.plot(px6, py6, 'r', label='Nr3 peptides')
+first = plt.plot(px, py, 'b', label=sys.argv[2])
+second = plt.plot(px3, py3, 'g', label=sys.argv[4])
+third = plt.plot(px6, py6, 'r', label=sys.argv[6])
 pylab.legend(loc='upper left')
 plt.plot(x, x, 'k--')
 #plt.axis([0, 0.4, 0, 0.4])
