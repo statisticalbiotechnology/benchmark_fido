@@ -38,7 +38,7 @@ pSeen3 = False
 fpSeen6 = False
 pSeen6 = False
     
-for i in range (1, 5723):
+for i in range (1, len(table15)):
     a = table15 [i][2]
     a = float(a)
     
@@ -67,7 +67,7 @@ for i in range (1, 5723):
     px.append(a)
     py.append(fpp)
     
-for i in range (1, 8090):
+for i in range (1, len(table30)):
     f = table30 [i][2]
     f = float(f)
     
@@ -96,7 +96,7 @@ for i in range (1, 8090):
     px3.append(f)
     py3.append(fpp3)
     
-for i in range (1, 10876):
+for i in range (1, len(table60)):
     l = table60 [i][2]
     l = float(l)
     
@@ -126,9 +126,9 @@ for i in range (1, 10876):
     py6.append(fpp6)
     
     
-first = plt.plot(px, py, 'b', label='15000 peptides')
-second = plt.plot(px3, py3, 'g', label='30000 peptides')
-third = plt.plot(px6, py6, 'r', label='60000 peptides')
+first = plt.plot(px, py, 'b', label='Nr1 peptides')
+second = plt.plot(px3, py3, 'g', label='Nr2 peptides')
+third = plt.plot(px6, py6, 'r', label='Nr3 peptides')
 pylab.legend(loc='upper left')
 plt.plot(x, x, 'k--')
 #plt.axis([0, 0.4, 0, 0.4])
