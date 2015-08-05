@@ -1,8 +1,9 @@
+import sys
 import xmltodict
 import numpy as np
 import matplotlib.pyplot as plt
 
-docfile = open('Filename.xml', 'r') # The input is the xml output file from Percolator 
+docfile = open(sys.argv[1], 'r') # The input is the xml output file from Percolator 
 oridoc = docfile.read()
 doc = xmltodict.parse(oridoc)
 perc = doc['percolator_output']['proteins']['protein']
@@ -17,5 +18,5 @@ for i in range(0, 656):
         pv = float(pv)
         px.append(pv)
 
-plt.hist(px, bins=60)
+plt.hist(px, bins=sys.argv[2])
 plt.show()
