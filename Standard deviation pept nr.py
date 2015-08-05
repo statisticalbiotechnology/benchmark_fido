@@ -126,9 +126,9 @@ for i in range(minLength):
     
 
 plt.plot(x, x, 'k--')
-plt.errorbar(px, py, xerr=ex, yerr=None, color='r', ecolor = 'maroon', errorevery = 60, label='15000 proteins')
-plt.errorbar(px3, py3, xerr=ex3, yerr=None, color='g', ecolor = 'darkgreen', errorevery = 60, label='30000 proteins')
-plt.errorbar(px6, py6, xerr=ex6, yerr=None, color='royalblue', ecolor = 'steelblue', errorevery = 80, label='60000 proteins')
+plt.errorbar(px, py, xerr=ex, yerr=None, color='r', ecolor = 'maroon', errorevery = 60, label='Nr1 peptides')
+plt.errorbar(px3, py3, xerr=ex3, yerr=None, color='g', ecolor = 'darkgreen', errorevery = 60, label='Nr2 peptides')
+plt.errorbar(px6, py6, xerr=ex6, yerr=None, color='royalblue', ecolor = 'steelblue', errorevery = 80, label='Nr3 peptides')
 pylab.legend(loc='lower right')
 plt.xlabel("Expected q value")
 plt.ylabel("Observed FDR")
