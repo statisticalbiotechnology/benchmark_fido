@@ -38,7 +38,7 @@ In this case, the script will plot the observed FDR (calculated as in the other 
 
 This script takes as an input the .xml file from Percolator, and plots a histogram of all the p values found there. The range of the i was calculated on the back of the envelope (sorry about that), it should be changed for each file, most likely. 
 
-**Example:**
+###**Example:**
 
 Let's have a look at the whole path to get to *Different peptides nr*'s output. 
 
