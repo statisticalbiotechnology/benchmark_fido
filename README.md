@@ -37,3 +37,37 @@ In this case, the script will plot the observed FDR (calculated as in the other 
 **pv histogram2.py:**
 
 This script takes as an input the .xml file from Percolator, and plots a histogram of all the p values found there. The range of the i was calculated on the back of the envelope (sorry about that), it should be changed for each file, most likely. 
+
+**Example:**
+
+Let's have a look at the whole path to get to *Different peptides nr*'s output. 
+
+First, we get the script [SimulateExperiment](https://github.com/statisticalbiotechnology/inferrensim/blob/master/scripts/simulateExperiment.py) and we run it as:
+
+`$ python SimulateExperiment.py --outputPath 10000peptides.tab --numSpectra 10000 swissprot_human.fasta`
+
+So we have our first file. We want to do this with three different numbers of peptides, so we run it a couple of times more.
+
+`$ python SimulateExperiment.py --outputPath 50000peptides.tab --numSpectra 50000 swissprot_human.fasta`
+
+`$ python SimulateExperiment.py --outputPath 100000peptides.tab --numSpectra 100000 swissprot_human.fasta`
+
+Now we need to run this files in Percolator and get the protein output file. 
+
+`$ percolator -X 10000peps.xml -A -q -d 2 -l 10000peps.prot.tab 10000peptides.tab > 10000peps.psms`
+
+We ask Percolator to make a fine grid search with -d 2, and to give us an extra file with the proteins list with -l name.tab. This is the file we are going to use as an input for our script. We run Percolator another two times to get the other two protein files, and we go to the script.
+
+In lines from 6 to 14, we have:
+
+`data15 = csv.reader(open('Filename1.tab', 'rb'), delimiter='\t')`
+
+`table15 = [row for row in data15]`
+
+So we substitute the Filenames with our own.
+
+`data15 = csv.reader(open('10000peps.prot.tab', 'rb'), delimiter='\t')`
+
+`table15 = [row for row in data15]`
+
+And we write the number of peptides for each line in the plot in lines 129, 130, 131. If Python gives back an error such as "division by 0 in line 122", check in the tab file that the names in the first column are actually "absent" and "present". If not, change them. 
