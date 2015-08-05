@@ -10,13 +10,21 @@ The second plot gives back the number of target proteins found vs the FDR.
 The input file for this script is a protein output file from Percolator (-l), using as an input for it 
 the ups database (with ~50 proteins) plus a contaminants database with a mimic entrapment of ~450 proteins.
 
+`$ python Definitions.py File.tab`
+
 **Different peptides nr.py:**
 
-This script takes as an input three different Percolator protein outputs (-l). The input for Percolator is a simulated data file created with the simulation script, changing the number of peptides in each file (--numSpectra). It also groups proteins with the same peptides together. The output is a plot with the expected q value (taken from the file) and the observed FDR (calculated as above) of all three input files together. 
+This script takes as an input three different Percolator protein outputs (-l) and the names for the tags on the plot.
+
+`$ python Different\peptides\nr.py File1.tab Tag1 File2.tab Tag2 File3.tab Tag3`
+
+The input for Percolator is a simulated data file created with the simulation script, changing the number of peptides in each file (--numSpectra). It also groups proteins with the same peptides together. The output is a plot with the expected q value (taken from the file) and the observed FDR (calculated as above) of all three input files together. 
 
 **Standard deviation pept nr.py:**
 
-In this case we have 10 different simulations for each number of peptides, and the script calculates and plots the average of all of them with the correspondant standard deviation. The input files are the same as before, only a bigger number of them. In this case, they all have the same name but changin a number from 1 to 10, which makes opening easier. As every file has a different length, the script takes the shortest length for the ten simulations. 
+In this case we have X different simulations for each number of peptides, and the script calculates and plots the average of all of them with the correspondant standard deviation. The input files are the same as before, only a bigger number of them. In this case, they all have the same name but changin a number from 1 to X, which makes opening easier. As every file has a different length, the script takes the shortest length for the ten simulations. Here's an example of how to run it:
+
+`$ python Standard\deviation\pept\nr.py First%d.tab Tag1 Second%d.tab Tag2 Third%d.tab Tag3 X`
 
 **Expectedqv-fdr.py:**
 
@@ -36,7 +44,7 @@ In this case, the script will plot the observed FDR (calculated as in the other 
 
 **pv histogram2.py:**
 
-This script takes as an input the .xml file from Percolator, and plots a histogram of all the p values found there. The range of the i was calculated on the back of the envelope (sorry about that), it should be changed for each file, most likely. 
+This script takes as an input the .xml file from Percolator, and plots a histogram (with as many bricks as in  Nr_of_bins) of all the p values found there. The range of the i (Nr_of_rows) was calculated on the back of the envelope (sorry about that), it should be changed for each file, most likely. It has three input arguments: `Filename.xml Nr_of_rows Nr_of_bins`
 
 ###**Example:**
 
@@ -44,30 +52,20 @@ Let's have a look at the whole path to get to *Different peptides nr*'s output.
 
 First, we get the script [SimulateExperiment](https://github.com/statisticalbiotechnology/inferrensim/blob/master/scripts/simulateExperiment.py) and we run it as:
 
-`$ python SimulateExperiment.py --outputPath 10000peptides.tab --numSpectra 10000 swissprot_human.fasta`
+`$ python SimulateExperiment.py --outputPath 15000peptides.tab --numSpectra 15000 swissprot_human.fasta`
 
 So we have our first file. We want to do this with three different numbers of peptides, so we run it a couple of times more.
 
-`$ python SimulateExperiment.py --outputPath 50000peptides.tab --numSpectra 50000 swissprot_human.fasta`
+`$ python SimulateExperiment.py --outputPath 30000peptides.tab --numSpectra 30000 swissprot_human.fasta`
 
-`$ python SimulateExperiment.py --outputPath 100000peptides.tab --numSpectra 100000 swissprot_human.fasta`
+`$ python SimulateExperiment.py --outputPath 60000peptides.tab --numSpectra 60000 swissprot_human.fasta`
 
 Now we need to run this files in Percolator and get the protein output file. 
 
-`$ percolator -X 10000peps.xml -A -q -d 2 -l 10000peps.prot.tab 10000peptides.tab > 10000peps.psms`
+`$ percolator -X 15000peps.xml -A -q -d 2 -l 15000peps.prot.tab 15000peptides.tab > 15000peps.psms`
 
-We ask Percolator to make a fine grid search with -d 2, and to give us an extra file with the proteins list with -l name.tab. This is the file we are going to use as an input for our script. We run Percolator another two times to get the other two protein files, and we go to the script.
+We ask Percolator to make a fine grid search with -d 2, and to give us an extra file with the proteins list with -l name.tab. This is the file we are going to use as an input for our script. We run Percolator another two times to get the other two protein files, and we can run the script.
 
-In lines from 6 to 14, we have:
+`$ python Different\peptides\nr.py 15000peps.prot.tab 15.000\peptides 30000peps.prot.tab 30.000\peptides 60000peps.prot.tab 60.000\peptides`
 
-`data15 = csv.reader(open('Filename1.tab', 'rb'), delimiter='\t')`
 
-`table15 = [row for row in data15]`
-
-So we substitute the Filenames with our own.
-
-`data15 = csv.reader(open('10000peps.prot.tab', 'rb'), delimiter='\t')`
-
-`table15 = [row for row in data15]`
-
-And we write the number of peptides for each line in the plot in lines 129, 130, 131. If Python gives back an error such as "division by 0 in line 122", check in the tab file that the names in the first column are actually "absent" and "present". If not, change them. 
