@@ -20,7 +20,7 @@ pt = []
 
 
     
-for i in range (3, len(table)-1):
+for i in range (3, len(table)):
 #for c in table[3:][0]:
     
     c = table [i][0] # Protein name
