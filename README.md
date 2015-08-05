@@ -22,7 +22,7 @@ The input for Percolator is a simulated data file created with the simulation sc
 
 **Standard deviation pept nr.py:**
 
-In this case we have X different simulations for each number of peptides, and the script calculates and plots the average of all of them with the correspondant standard deviation. The input files are the same as before, only a bigger number of them. In this case, they all have the same name but changin a number from 1 to X, which makes opening easier. As every file has a different length, the script takes the shortest length for the ten simulations. Here's an example of how to run it:
+In this case we have X different simulations for each number of peptides, and the script calculates and plots the average of all of them with the correspondant standard deviation. The input files are the same as before, only a bigger number of them. In this case, they all have the same name but changin a number from 1 to X, which makes opening easier. As every file has a different length, the script takes the shortest length for the ten simulations. Here's an example of how to run it with input files First1.tab, First2.tab,..., FirstX.tab, Second1.tab, Second2.tab, etc:
 
 `$ python Standard\deviation\pept\nr.py First%d.tab Tag1 Second%d.tab Tag2 Third%d.tab Tag3 X`
 
