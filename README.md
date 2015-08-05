@@ -44,7 +44,9 @@ In this case, the script will plot the observed FDR (calculated as in the other 
 
 **pv histogram2.py:**
 
-This script takes as an input the .xml file from Percolator, and plots a histogram (with as many bricks as in  Nr_of_bins) of all the p values found there. The range of the i (Nr_of_rows) was calculated on the back of the envelope (sorry about that), it should be changed for each file, most likely. It has three input arguments: `Filename.xml Nr_of_rows Nr_of_bins`
+This script takes as an input the .xml file from Percolator, and plots a histogram (with as many bricks as in  Nr_of_bins) of all the p values found there. The range of the i (Nr_of_rows) was calculated on the back of the envelope (sorry about that), it should be changed for each file, most likely. It has three input arguments:
+
+`Filename.xml Nr_of_rows Nr_of_bins`
 
 ###**Example:**
 
