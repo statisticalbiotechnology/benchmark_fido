@@ -11,7 +11,7 @@ p = 0
 
 px = []
 py = []
-for i in range (1, 4509):
+for i in range (1, len(table)):
     a = table [i][3]
     a = float(a)
     # a is the column of q-values 
