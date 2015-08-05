@@ -29,7 +29,7 @@ px6 = []
 py6 = []
 ex6 = []
 
-for i in range(1,10):
+for i in range(1,sys.argv[7]):
     t = csv.reader(open(sys.argv[1] % (i),'rb'), delimiter = '\t')
     t.next()
     localQvalues = [float(row[2]) for row in t]
@@ -61,7 +61,7 @@ for i in range(minLength):
     py.append(fpp)
     ex.append(sdqv)
    
-for i in range(1,10):
+for i in range(1,sys.argv[7]):
     t3 = csv.reader(open(sys.argv[3] % (i),'rb'), delimiter = '\t')
     t3.next()
     localQvalues3 = [float(row[2]) for row in t3]
@@ -93,7 +93,7 @@ for i in range(minLength):
     py3.append(fpp3)
     ex3.append(sdqv3)
        
-for i in range(1,10):
+for i in range(1,sys.argv[7]):
     t6 = csv.reader(open(sys.argv[5] % (i),'rb'), delimiter = '\t')
     t6.next()
     localQvalues6 = [float(row[2]) for row in t6]
