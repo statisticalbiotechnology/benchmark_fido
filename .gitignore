@@ -2,6 +2,9 @@ Contaminants/*
 UpsCrap/*
 data/*/*
 !data/*/*.sh
+!data/*/*.fa
+!data/fasta/*.fasta
+data/fasta/env_nr.fasta
 results/*
 software/*
 doc/*.pdf
