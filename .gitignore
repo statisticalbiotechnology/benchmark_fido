@@ -1,0 +1,10 @@
+Contaminants/*
+UpsCrap/*
+data/*/*
+!data/*/*.sh
+results/*
+software/*
+doc/*.pdf
+doc/*.aux
+doc/*.log
+*~

@@ -1,0 +1,67 @@
+\documentclass{article}
+
+\title{Finding proteins with equal or subset peptide sets}
+
+%\title{Present or correct, what is the difference between different
+% lists of proteins?}
+
+%\title{Which questions do you answer with a list of proteins?}
+
+\author{Matthew The}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{bbm}
+\usepackage{graphicx}
+\usepackage[outdir=./img/]{epstopdf}
+\usepackage{epsfig}
+
+\begin{document}
+
+\maketitle
+
+Input: fasta file with protein sequences
+
+Output: a map $F$ from fragment proteins to their parent protein, a
+map $D$ from duplicate proteins to their representing protein.
+
+\begin{enumerate}
+ \item Digest proteins with appropriate parameters (minimum peptide
+length, maximum peptide length, maximum miscleavages, protease).
+ \item Create and fill map $P$ with peptides as key and the list of
+proteins it occurs as the value.
+ \item Create a map $S$ with proteins as key and the set of
+proteins whose peptides are a subset of the protein used as key.
+ \item Create a map $L$ with proteins as key and the number of
+peptides as value.
+ \item For each protein $R$:
+ \begin{enumerate}
+  \item Take the intersection of the protein lists from $P$ of all
+peptides in $R$.
+  \item The final intersection contains all proteins for which the
+current protein's peptide set is a subset (could be equal as well).
+  \item Remove $R$ from the intersection
+  \item If no proteins are left in the intersection go to the next
+protein.
+  \item If proteins are left, sort the proteins in alphabetical order.
+Let $Z$ be the last protein in this list.
+  \item Add the set of proteins under the key $R$ in $S$ to key $Z$ in
+$S$. Remove the key $R$ from $S$.
+  \item Add $R$ to the set of proteins at key $Z$ in $S$.
+  \item Add an entry for $R$ in $L$.
+ \end{enumerate}
+ \item For each key $K$ in $S$:
+ \begin{enumerate}
+  \item Iterate through the set of proteins belonging to $K$, if they
+have the same number of peptides as $K$ (using the map $L$) add an
+entry in the duplicate protein map
+ \end{enumerate}
+
+
+\end{enumerate}
+
+
+
+\end{document}

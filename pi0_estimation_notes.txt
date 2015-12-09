@@ -1,0 +1,25 @@
+Let's assume all peptides with q < 0.01 and their associated proteins are actually present*, then:
+
+* assuming the protein is present based on these criteria could give issues with shared peptides
+
+P(#{peptides q < 0.01 for protein} = k | #{total (tryptic) peptides present}, #{total (tryptic) peptides detected q < 0.01}, #{(tryptic) peptides in protein})
+= 
+HyperGeometric(white draws = k, total = #{total (tryptic) peptides present}, white = #{(tryptic) peptides in protein}, draws = #{total (tryptic) peptides detected q < 0.01})
+
+#{total (tryptic) peptides present} ~= (1 - pi_0) * #{total (tryptic) peptides in db}
+
+We could marginalize out the #{total (tryptic) peptides present}, assuming a (uniform?) distribution over pi_0.
+
+Alternatively we can try to get a maximum likelihood estimate on #{total (tryptic) peptides present}.
+
+We can also aggregate all proteins, and use just 1 hypergeometric distribution as:
+
+P(#{peptides q < 0.01 for all detected proteins} = k | #{total (tryptic) peptides present}, #{total (tryptic) peptides detected q < 0.01}, #{(tryptic) peptides in all detected proteins})
+= 
+HyperGeometric(white draws = k, total = #{total (tryptic) peptides present}, white = #{(tryptic) peptides in all detected proteins}, draws = #{total (tryptic) peptides detected q < 0.01})
+
+With the maximum likelihood estimate
+
+#{peptides q < 0.01 for all detected proteins} * #{total (tryptic) peptides detected q < 0.01} / #{(tryptic) peptides in all detected proteins}
+
+You could even do a Mayu correction by estimating this quantity per group of proteins with similar number of peptides.

@@ -1,0 +1,117 @@
+\documentclass{article}
+
+\title{Fisher's method for protein inference}
+
+%\title{Present or correct, what is the difference between different
+% lists of proteins?}
+
+%\title{Which questions do you answer with a list of proteins?}
+
+\setlength{\parindent}{0pt}
+
+\author{Matthew The}
+
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{amsmath}
+\usepackage{url}
+\usepackage{bbm}
+\usepackage{graphicx}
+\usepackage[outdir=./img/]{epstopdf}
+\usepackage{epsfig}
+\usepackage{a4wide}
+
+\begin{document}
+
+\maketitle
+
+\section{Finding proteins with equal or subset peptide sets}
+
+Input: 
+\begin{itemize}
+ \item fasta file with protein sequences
+\end{itemize}
+
+Output:
+\begin{itemize}
+ \item a map $M_F: \mbox{fragment protein} \to \mbox{representing
+protein}$
+ \item a map $M_D: \mbox{duplicate protein} \to \mbox{representing
+protein}$
+\end{itemize}
+
+\bigskip
+Algorithm:
+\begin{enumerate}
+ \item Create a map $M_P: \mbox{peptide} \to \mbox{list of proteins
+peptide occurs in}$.
+ \item Digest proteins with appropriate parameters (minimum peptide
+length, maximum peptide length, maximum miscleavages, protease) and
+fill $M_P$ with the results.
+ \item Create a map $M_S: \mbox{protein} \to \mbox{set of proteins
+whose peptides are a subset of the protein}$.
+ \item Create a map $M_L: \mbox{protein} \to \mbox{number of peptides
+in the protein}$.
+ \item For each protein $R$:
+ \begin{enumerate}
+  \item Extract the protein lists from $M_P$ for all peptides in $R$
+and take the intersection. This intersection $I$ contains all
+proteins for which $R$'s peptide set is a subset (could be equal as
+well).
+  \item Remove $R$ from $I$
+  \item If no proteins are left in $I$ go to the next
+protein.
+  \item Sort the proteins in $I$ in alphabetical order. Let $Z$ be the
+last protein in this list.
+  \item Add the set of proteins under the key $R$ in $M_S$ to the set
+of proteins under the key $Z$ in $M_S$. Remove the key $R$ from $M_S$.
+  \item Add $R$ to the set of proteins at key $Z$ in $M_S$.
+  \item Add an entry with the number of peptides for $R$ in $M_L$.
+ \end{enumerate}
+ \item For each protein key $K$ in $M_S$:
+ \begin{enumerate}
+  \item For each protein $C$ in the set of proteins belonging to $K$:
+  \begin{enumerate}
+   \item if $C$ has the same number of peptides as $K$ (use $M_L$ to
+check), add an entry in $M_D$ with key $C$ and value $K$.
+   \item if $C$ has fewer peptides than $K$, add an entry in $M_F$
+with key $C$ and value $K$.
+  \end{enumerate}
+ \end{enumerate}
+\end{enumerate}
+
+\section{Removing shared peptides from percolator peptide list}
+
+Input: 
+\begin{itemize}
+ \item list of peptides $L_A$, each with a list of proteins it
+appears in.
+ \item a map $M_F: \mbox{fragment protein} \to \mbox{representing
+protein}$
+ \item a map $M_D: \mbox{duplicate protein} \to \mbox{representing
+protein}$
+\end{itemize}
+
+Output:
+\begin{itemize}
+ \item list of non-shared peptides $L_N$, each with a list of proteins
+it appears in.
+\end{itemize}
+
+\bigskip
+Algorithm:
+\begin{enumerate}
+ \item For each peptide $P$ in $L_A$:
+ \begin{enumerate}
+  \item Create a set $S_R$ of representing proteins
+  \item For each protein $C$ in the protein list of $P$:
+  \begin{enumerate}
+   \item Use $M_D$ and $M_L$ to find the representing protein $R$ of
+$C$.
+   \item Add $R$ to $S_R$.
+  \end{enumerate}
+  \item If $S_R$ contains just $1$ protein, $P$ is non-shared
+and can be added to $L_N$, otherwise we throw it out.
+ \end{enumerate}
+\end{enumerate}
+\end{document}
