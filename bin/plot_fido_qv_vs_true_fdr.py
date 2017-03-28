@@ -53,7 +53,7 @@ def getQvalues(fileName):
     bestPeptideIncorrect = table[i][4][1] == 'i'
     noCorrectPeptide = sum(1 for p in table[i][4].split() if p[1] == 'c') == 0
     proteinAbsent = not 'present' in proteinName
-    if noCorrectPeptide or proteinName.startswith('mimic'):
+    if proteinName.startswith('mimic'):
       fpSeen = True
     else: 
       pSeen = True

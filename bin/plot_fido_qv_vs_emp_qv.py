@@ -22,5 +22,12 @@ plt.plot(x, x, 'k--')
 
 plt.xlabel("Fido q value")
 plt.ylabel("Empirical q value")
+
+if False:
+  plt.figure()
+  plt.plot(fidoQvs)
+
+  plt.figure()
+  plt.plot(empQvs)
 plt.show()
   

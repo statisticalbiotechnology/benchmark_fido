@@ -5,15 +5,24 @@ import numpy as np
 import os
 
 def main():
-  picked = True
-  dataSet = "pandey"
+  dataSet = "mimic_yeast"
+  
+  options = {}
+  options["twoPeptideRule"] = True # if False ==> onePeptideRule
+  options["picked"] = True
+  options["removeSharedPeptides"] = False
+  options["proteinGroupingThreshold"] = 1.0
   
   percTabBases = list()
   if dataSet == "prest":
-    percTabFolder = "/media/storage/mergespec/data/FE_Kall_vial_%d/percolator_tdc_with_randoms_full_digest/tab_no_pept_cutoff/"
-    percTabBase = os.path.join(percTabFolder, "FE_Kall_vial_%d.percolator")
-    for i in range(1,4):
+    percTabFolder = "/media/storage/mergespec/data/FE_Kall_vial_%s/percolator_tdc/tab/"
+    percTabBase = os.path.join(percTabFolder, "FE_Kall_vial_%s.percolator")
+    for i in ["A","B","AB"]:
       percTabBases.append(percTabBase % (i,i))
+  elif dataSet == "mimic_yeast":
+    percTabFolder = "/home/matthew/mergespec/data/103111-Yeast-2hr/percolator_tdc/tab/"
+    percTabBase = os.path.join(percTabFolder, "103111-Yeast-2hr.percolator")
+    percTabBases.append(percTabBase)
   elif dataSet == "sim":
     pi0 = "0.25"
     frac1 = "0.25"
@@ -22,30 +31,44 @@ def main():
       percTabBases.append(percTabBase % i)
   elif dataSet == "pandey":
     percTabBases.append("/media/storage/mergespec/data/Pandey/percolator_tdc/tab_15M_pval_0.001/Pandey.percolator")
-    #percTabBases.append("/media/storage/mergespec/data/Pandey/percolator_tdc_uniprot/tab_uppmax/Pandey.percolator")
       
   for percTabBase in percTabBases:
-    writeProteinFdrs(percTabBase, picked)
-    writeProteinFdrsFromProts(percTabBase, picked)
+    writeProteinFdrs(percTabBase, options)
+    writeProteinFdrsFromProts(percTabBase, options)
 
-def writeProteinFdrs(percTabBase, picked):
-  targetFN = percTabBase + ".tab.peptides"
-  decoyFN = percTabBase + ".decoys.tab.peptides"
-  if picked:
-    targetOutFN = percTabBase + ".tab.picked_proteins"
-    decoyOutFN = percTabBase + ".decoys.tab.picked_proteins"
+def getOutputFN(percTabBase, options):
+  targetOutFN = percTabBase + ".tab.proteins"
+  decoyOutFN = percTabBase + ".decoys.tab.proteins"
+  if options["twoPeptideRule"]:
+    targetOutFN += ".twopept"
+    decoyOutFN += ".twopept"
+  if options["picked"]:
+    targetOutFN += ".picked"
+    decoyOutFN += ".picked"
   else:
-    targetOutFN = percTabBase + ".tab.classic_proteins"
-    decoyOutFN = percTabBase + ".decoys.tab.classic_proteins"
+    targetOutFN += ".classic"
+    decoyOutFN += ".classic"
+  if not options["removeSharedPeptides"]:
+    targetOutFN += ".with_shared_pepts"
+    decoyOutFN += ".with_shared_pepts"
+  if options["proteinGroupingThreshold"] < 1.0:
+    targetOutFN += ".with_protein_grouping_threshold_" + str(options["proteinGroupingThreshold"])
+    decoyOutFN += ".with_protein_grouping_threshold_" + str(options["proteinGroupingThreshold"])
+  return targetOutFN, decoyOutFN
   
+def writeProteinFdrs(percTabBase, options):
+  targetFN = percTabBase + ".tab.peptides"
+  decoyFN = percTabBase + ".decoys.tab.peptides"  
+  
+  targetOutFN, decoyOutFN = getOutputFN(percTabBase, options)
   outHeader = ["ProteinId", "ProteinGroupId", "q-value", "posterior_error_prob", "peptideIds"]
   
   print targetFN
   print decoyFN
-  targetProteins = getProteinQvalueMap(targetFN)
-  decoyProteins = getProteinQvalueMap(decoyFN)
+  targetProteins = getProteinQvalueMap(targetFN, options)
+  decoyProteins = getProteinQvalueMap(decoyFN, options)
   
-  pickedProteins = pickedProteinCompetition(targetProteins, decoyProteins, picked)
+  pickedProteins = pickedProteinCompetition(targetProteins, decoyProteins, options)
   
   targetWriter = csv.writer(open(targetOutFN, 'w'), delimiter = '\t')
   decoyWriter = csv.writer(open(decoyOutFN, 'w'), delimiter = '\t')
@@ -63,23 +86,45 @@ def writeProteinFdrs(percTabBase, picked):
         significantProteins += 1
   print "Proteins with q < 0.01:", significantProteins
     
-def getProteinQvalueMap(peptFile):
+def getProteinQvalueMap(peptFile, options):
   reader = csv.reader(open(peptFile, 'r'), delimiter = '\t')
   reader.next()
   proteinQvalueMap = dict()
   for row in reader:
-    if len(row) == 6:
-      if row[5] not in proteinQvalueMap:
-        proteinQvalueMap[row[5]] = [float(row[3]), [row[4][2:-2]]]
-      else:
-        proteinQvalueMap[row[5]][1].append(row[4][2:-2])
+    if float(row[2]) <= options["proteinGroupingThreshold"]:
+      if len(row) == 6 or not options["removeSharedPeptides"]:
+        for protein in row[5:]:
+          if protein not in proteinQvalueMap:
+            proteinQvalueMap[protein] = [-1*float(row[1]), [row[4][2:-2]]]
+          else:
+            proteinQvalueMap[protein][1].append(row[4][2:-2])
   return proteinQvalueMap
-  
-def pickedProteinCompetition(targetProteins, decoyProteins, picked):
+
+def getProteinQvalueMap(peptFile, options):
+  reader = csv.reader(open(peptFile, 'r'), delimiter = '\t')
+  reader.next()
+  proteinQvalueMap = dict()
+  for row in reader:
+    if float(row[2]) <= options["proteinGroupingThreshold"]:
+      if len(row) == 6 or not options["removeSharedPeptides"]:
+        for protein in row[5:]:
+          if protein not in proteinQvalueMap:
+            proteinQvalueMap[protein] = [-1*float(row[1]), [row[4][2:-2]]]
+          else:
+            if options["twoPeptideRule"] and len(proteinQvalueMap[protein][1]) == 1:
+              proteinQvalueMap[protein][0] = -1*float(row[1])
+            proteinQvalueMap[protein][1].append(row[4][2:-2])
+  if options["twoPeptideRule"]:
+    for protein in proteinQvalueMap.keys():
+      if len(proteinQvalueMap[protein][1]) < 2:
+        del proteinQvalueMap[protein]
+  return proteinQvalueMap
+   
+def pickedProteinCompetition(targetProteins, decoyProteins, options):
   pickedProteins = list()
   for protein in targetProteins:
     decoyProtein = "decoy_" + protein
-    if picked and decoyProtein in decoyProteins:
+    if options["picked"] and decoyProtein in decoyProteins:
       if targetProteins[protein][0] <= decoyProteins[decoyProtein][0]:
         pickedProteins.append([protein, targetProteins[protein]])
       else:
@@ -91,7 +136,26 @@ def pickedProteinCompetition(targetProteins, decoyProteins, picked):
   for decoyProtein in decoyProteins:
     pickedProteins.append([decoyProtein, decoyProteins[decoyProtein]])
   
-  pickedProteins = sorted(pickedProteins, key = lambda x : x[1][0])
+  pickedProteins = sorted(pickedProteins, key = lambda x : (x[1][0], x[1][1][0]))
+  
+  if options["proteinGroupingThreshold"] < 1.0:
+    newPickedProteins = []
+    skip = []
+    i = 0
+    while i < len(pickedProteins)-2:
+      if i in skip:
+        i += 1
+        continue
+      proteinName = pickedProteins[i][0]
+      for j in range(i+1,len(pickedProteins)-1):
+        if set(pickedProteins[i][1][1]).issubset(set(pickedProteins[j][1][1])) or set(pickedProteins[j][1][1]).issubset(set(pickedProteins[i][1][1])):
+        #if pickedProteins[i][1][1][0] == pickedProteins[j][1][1][0]:
+          #print pickedProteins[i], pickedProteins[j]
+          proteinName += "," + pickedProteins[j][0]
+          skip.append(j)
+      newPickedProteins.append([proteinName, pickedProteins[i][1]])
+      i += 1
+    pickedProteins = newPickedProteins
   
   decoys, targets = 0, 0
   for proteinQvaluePair in pickedProteins:
@@ -108,10 +172,10 @@ def pickedProteinCompetition(targetProteins, decoyProteins, picked):
     
   return pickedProteins
 
-def writeProteinFdrsFromProts(percTabBase, picked):
+def writeProteinFdrsFromProts(percTabBase, options):
   targetFN = percTabBase + ".tab.proteins"
   decoyFN = percTabBase + ".decoys.tab.proteins"
-  if picked:
+  if options["picked"]:
     targetOutFN = percTabBase + ".tab.picked_proteins_from_prots"
     decoyOutFN = percTabBase + ".decoys.tab.picked_proteins_from_prots"
   else:
@@ -125,7 +189,7 @@ def writeProteinFdrsFromProts(percTabBase, picked):
   targetProteins = getProteinQvalueMapFromProts(targetFN)
   decoyProteins = getProteinQvalueMapFromProts(decoyFN)
   
-  pickedProteins = pickedProteinCompetitionFromProts(targetProteins, decoyProteins, picked)
+  pickedProteins = pickedProteinCompetitionFromProts(targetProteins, decoyProteins, options["picked"])
   
   targetWriter = csv.writer(open(targetOutFN, 'w'), delimiter = '\t')
   decoyWriter = csv.writer(open(decoyOutFN, 'w'), delimiter = '\t')
@@ -155,12 +219,13 @@ def getProteinQvalueMapFromProts(protFile):
     
 def pickedProteinCompetitionFromProts(targetProteins, decoyProteins, picked):
   pickedProteins = list()
+  
   for protein in targetProteins:
     decoyProtein = "decoy_" + protein
     if picked and decoyProtein in decoyProteins:
-      if float(targetProteins[protein][2]) <= float(decoyProteins[decoyProtein][2]):
+      if float(targetProteins[protein][2]) < float(decoyProteins[decoyProtein][2]):
         pickedProteins.append(targetProteins[protein])
-      else:
+      elif float(targetProteins[protein][2]) > float(decoyProteins[decoyProtein][2]):
         pickedProteins.append(decoyProteins[decoyProtein])
       decoyProteins.pop(decoyProtein, None)
     else:

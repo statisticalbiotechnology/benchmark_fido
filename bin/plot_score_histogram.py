@@ -19,10 +19,14 @@ if len(sys.argv) > 2:
   for row in decoyReader:
     pepsDecoy.append(float(row[1]))
 
-#plt.hist(pepsTarget, bins = 100, label = 'Target', color = 'b', normed = True, alpha = 0.5)
-#plt.hist(pepsDecoy, bins = 50, label = 'Decoy', color = 'r', normed = True, alpha = 0.5)
+numBins = 50
+maxScore = max(pepsTarget + pepsDecoy)
+minScore = min(pepsTarget + pepsDecoy)
+bins = np.arange(minScore, maxScore + 1e-10, (maxScore - minScore) / numBins)
+plt.hist(pepsTarget, bins = bins, label = 'Target', color = 'b', normed = False, alpha = 0.5)
+plt.hist(pepsDecoy, bins = bins, label = 'Decoy', color = 'r', normed = False, alpha = 0.5)
 
-if True:
+if False:
   loc, scale = gumbel_l.fit(pepsDecoy)
   print loc, scale
   x = np.linspace(-3, 3, num=1000)
